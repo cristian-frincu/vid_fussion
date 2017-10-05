@@ -30,7 +30,12 @@ def MOG(c):
     while(cap.isOpened()):
         ret, frame = cap.read()
         fgmask = fgbg.apply(frame)
-        cv2.imshow('frame',fgmask)
+ 
+        kernel = np.ones((3,3),np.uint8)
+        erosion = cv2.erode(fgmask,kernel,iterations = 1)
+        dialate = cv2.dilate(erosion,kernel,iterations = 1)
+        
+        cv2.imshow('frame',dialate)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
