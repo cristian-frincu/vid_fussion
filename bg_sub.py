@@ -1,5 +1,4 @@
 import numpy as np
-import time
 import cv2
 
 #http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_gui/py_video_display/py_video_display.html
@@ -105,7 +104,11 @@ def MOG(c):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-cap = cv2.VideoCapture('vtest.avi')
+import glob
+
+#cap = cv2.VideoCapture('vtest.avi')
+cap = cv2.VideoCapture('2b.mp4')
+
 
 #blob params
 # Setup SimpleBlobDetector parameters.
@@ -118,8 +121,8 @@ params.filterByConvexity = False
 params.filterByInertia = False
 params.minArea = 50
 
-frame_difference(cap)
-#MOG(cap)
+#frame_difference(cap)
+MOG(cap)
 #mean_filter(cap,N=5)
 
 cap.release()
