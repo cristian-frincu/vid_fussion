@@ -79,7 +79,7 @@ def mean_filter(cap,N):
 #http://docs.opencv.org/3.1.0/db/d5c/tutorial_py_bg_subtraction.html
 #http://docs.opencv.org/3.1.0/d7/d4d/tutorial_py_thresholding.html
 
-def MOG(c):
+def MOG2(c):
     fgbg = cv2.createBackgroundSubtractorMOG2()
     detector = cv2.SimpleBlobDetector_create(params)
     while(cap.isOpened()):
@@ -98,8 +98,8 @@ def MOG(c):
 
         im_with_keypoints = cv2.drawKeypoints(frame, keypoints, np.array([]), (0,255,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
          
-        
-        cv2.imshow('frame',im_with_keypoints)
+        bg_removed = frame - dialate
+        cv2.imshow('frame',bg-removed)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -122,7 +122,7 @@ params.filterByInertia = False
 params.minArea = 50
 
 #frame_difference(cap)
-MOG(cap)
+MOG2(cap)
 #mean_filter(cap,N=5)
 
 cap.release()
