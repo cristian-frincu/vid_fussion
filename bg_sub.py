@@ -80,7 +80,7 @@ def mean_filter(cap,N):
 #http://docs.opencv.org/3.1.0/d7/d4d/tutorial_py_thresholding.html
 
 def MOG2(c):
-    fgbg = cv2.createBackgroundSubtractorMOG2()
+    fgbg = cv2.BackgroundSubtractorMOG2()
     detector = cv2.SimpleBlobDetector_create(params)
     while(cap.isOpened()):
         ret, frame = cap.read()
