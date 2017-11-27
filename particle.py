@@ -67,3 +67,4 @@ class TrackedParticle:
 
 	def reset_frames_undetected(self):
 		self.frames_undetected = 0 
+

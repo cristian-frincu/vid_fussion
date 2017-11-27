@@ -6,8 +6,8 @@ import itertools
 import cv2
 
 
-#cap = cv2.VideoCapture('vtest.avi')
-cap = cv2.VideoCapture('video1.mp4')
+cap = cv2.VideoCapture('vtest.avi')
+#cap = cv2.VideoCapture('people.mp4')
 #cap = cv2.VideoCapture('balls_m.mp4')
 
 #Settings for the text to display trackerID
@@ -103,13 +103,21 @@ while(cap.isOpened()):
             new_particle_id = tracker.new_particle(current_frame_raw[smalled_distance_current_frame_index])
             print ("Added new particle with ID:"+str(new_particle_id))
 
- #   print ("Particles:"+str(len(tracker.get_particle_list()))) 
+    print ("Particles:"+str(len(tracker.get_particle_list()))) 
  #   print ("\n")
 
     for part in tracker.get_particle_list():
 	position = part.x
 	cv2.rectangle(frame,(int(position[0])-10,int(position[2])-10),(position[0]+10,position[2]+10),(255,125,0),2)
 	cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,fontColor, lineType)
+
+	if len(part.path) > 1:
+	    last = part.path[0]
+	    for past in part.path:
+		cv2.line(frame, (last[0], last[2]),(past[0], past[2]),(0,0,255))
+		last = past
+		#cv2.circle(frame,(past[0],past[2]),5,((part.trackID)%255, ((part.trackID*3)%255),(part.trackID*7)%255), -5)
+
 
 
     cv2.imshow('Outlined',  frame)

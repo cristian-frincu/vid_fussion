@@ -6,6 +6,7 @@ class TrackManager:
 
     def new_particle(self,x):
         particle = TrackedParticle(x, self.particle_count)
+	particle.path = []
         self.particle_count+=1
         self.particle_list.append(particle)
         return self.particle_count -1
