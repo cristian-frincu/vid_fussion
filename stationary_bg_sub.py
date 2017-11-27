@@ -39,10 +39,13 @@ def frame_difference(cap):
 
 #https://docs.opencv.org/2.4/modules/imgproc/doc/motion_analysis_and_object_tracking.html
 #https://stackoverflow.com/questions/8855574/convert-ndarray-from-float64-to-integer
+
 def moving_avg(cap, n=20):
     avg = []
     seq_num = 0
     kernel = np.ones((5,5),np.uint8)
+    f = file('targets.csv','wr+')
+    frame_num = 0
     while(cap.isOpened()):
         ret, frame = cap.read()
         new_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -64,14 +67,16 @@ def moving_avg(cap, n=20):
 		if cv2.contourArea(cnt) > 150:
 			x,y,w,h = cv2.boundingRect(cnt)
 			cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-
+ 			f.write(str(frame_num)+","+str(x)+","+str(y)+'\n')
+			#cv2.putText(frame,str(target_ID),(x,y), font,fontScale,fontColor, lineType)
+ 	frame_num+=1
 	#cv2.drawContours(frame, contours, -1, (0,255,0), 1)
 
 	cv2.imshow('Outlined',  frame)
-	cv2.imshow('Foreground',  front)
-	cv2.imshow('Background Extracted',  foreground)
+	#cv2.imshow('Foreground',  front)
+	#cv2.imshow('Background Extracted',  foreground)
 	seq_num+=1
-        if cv2.waitKey(100) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 #http://answers.opencv.org/question/65005/in-python-how-can-i-reduce-a-list-of-contours-to-those-of-a-specified-size/
@@ -134,6 +139,16 @@ if int(ver[0]) < 3 :
     detector = cv2.SimpleBlobDetector(params)
 else : 
     detector = cv2.SimpleBlobDetector_create(params)
+
+
+font                   = cv2.FONT_HERSHEY_SIMPLEX
+fontScale              = 1
+fontColor              = (255,255,255)
+lineType               = 2
+
+
+
+target_ID = 0
 
 cap = cv2.VideoCapture('vtest.avi')
 #cap = cv2.VideoCapture('b1.mp4')
