@@ -10,34 +10,52 @@ class TrackedParticle:
 	frames_undetected = 0
 	path = []
 
+	# Width and height for each particle will also be used to improve the matching estimates
+	width = -1
+	height = -1
+	
+	#This is used for the logic to keep track of the m out of n logic for dropout
+	# frame_detection_status will be an array holding 1 and 0 to indicate if it is detected or not
+	frames_number = 0
+	m = 3
+	n = 10
+	frame_detection_status = [-1]*n
+
     #Kalman Filter parameter
 	dt = 1.0
-	R_var = 4.0  # Measurment variance
-	Q_var = 2.0  # Process variance
+	R_var = 1000.0  # Measurment variance
 
 	# x_pos, y_pos, x_vel,y_vel
 	x = np.array([[0., 0., 0., 0.]]).T  # State
-	P = np.eye(4)*200  # State covariance
+	P = np.eye(4)*2000  # State covariance
 
 	F = np.array([[1., dt, 0, 0],
 		     [0,  1, 0, 0],
 		     [0, 0, 1, dt],
 		     [0, 0, 0, 1]])  # Process Model
 
-	Q = np.eye(4)*Q_var
+	Q = np.array([[3000., 250, 0, 0],
+		     [250,  100, 0, 0],
+		     [0, 0, 3000, 250],
+		     [0, 0, 250, 100]])  # Process Varience
+
+
 
 	H = np.array([[1., 0., 0., 0.],
 		      [0., 0., 1., 0.]])  # Measurmnet conversion
 
 	R = np.eye(2)*R_var
+
 	I = np.eye(4)
 	y = np.zeros((2,1))
 
 
 #If the particle is not identified to belong to a TrackID, -1 represents unidentified
-	def __init__(self,  z, trackID=-1):
+	def __init__(self,  z, width, height, trackID=-1):
 		self.trackID = trackID
-		self.x = np.array([[z[0], 0., z[1], 0.]]).T
+		self.x = np.array([[z[0], 0., z[1], 0.]]).T # Initialize the particle at the first measurment location
+		self.width = width
+		self.height = height
 
 	def update_location(self,z):
 		z = np.array([[z[0], z[1]]]).T
@@ -62,9 +80,22 @@ class TrackedParticle:
 		self.P = dot3(self.F, self.P, self.F.T) + self.Q
 		return self.x
 		
+
+	def update_feature(self, feature):
+		self.width = feature[0]
+		self.height = feature[1]
+
+
+	# Gets called on each frame
 	def increase_frames_undetected(self):
+		self.frames_number+=1
+		self.frame_detection_status[self.frames_number%self.n] = -1
 		self.frames_undetected+= 1
 
+	# Gets called when a new mesurment was matched to this particle
 	def reset_frames_undetected(self):
+		self.frame_detection_status[self.frames_number%self.n] = 1
 		self.frames_undetected = 0 
 
+	def reset_frame_status(self):
+		self.frame_detection_status = [0]*self.n

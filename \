@@ -9,7 +9,7 @@ import cv2
 #cap = cv2.VideoCapture('vtest.avi')
 #cap = cv2.VideoCapture('people.mp4')
 #cap = cv2.VideoCapture('balls_m.mp4')
-cap = cv2.VideoCapture('cars2.mp4')
+cap = cv2.VideoCapture('cars.mp4')
 
 #Settings for the text to display trackerID
 font                   = cv2.FONT_HERSHEY_SIMPLEX
@@ -138,7 +138,7 @@ while(cap.isOpened()):
             new_particle_id = tracker.new_particle(current_frame_raw[smalled_distance_current_frame_index], current_frame_feature[smalled_distance_current_frame_index])
             print ("Added new particle with ID:"+str(new_particle_id))
 
-    #print ("Particles:"+str(len(tracker.get_particle_list()))) 
+    print ("Particles:"+str(len(tracker.get_particle_list()))) 
  #   print ("\n")
 
     for part in tracker.get_particle_list():
@@ -158,6 +158,6 @@ while(cap.isOpened()):
 
     cv2.imshow('Outlined',  frame)
     #if cv2.waitKey(10) & 0xFF == ord('q'):
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(50) & 0xFF == ord('q'):
 	    break
 
