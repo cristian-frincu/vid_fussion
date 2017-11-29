@@ -6,10 +6,12 @@ import itertools
 import cv2
 
 
-#cap = cv2.VideoCapture('vtest.avi')
+cap = cv2.VideoCapture('vtest.avi')
 #cap = cv2.VideoCapture('people.mp4')
 #cap = cv2.VideoCapture('balls_m.mp4')
-cap = cv2.VideoCapture('cars2.mp4')
+#cap = cv2.VideoCapture('cars2.mp4')
+#cap = cv2.VideoCapture('video2.mp4')
+
 
 #Settings for the text to display trackerID
 font                   = cv2.FONT_HERSHEY_SIMPLEX
@@ -18,15 +20,13 @@ fontColor              = (0,0,255)
 lineType               = 2
 
 
-
 ASSUME_SAME_PARTICLE_DISTANCE = 100
-MOVING_AVG = True
-MOG = False
+MOVING_AVG = False
+MOG = True
 
 tracker = TrackManager()
 
-
-mog = cv2.BackgroundSubtractorMOG2()
+mog = cv2.BackgroundSubtractorMOG()
 
 n=20
 avg = []
