@@ -17,13 +17,13 @@ class TrackedParticle:
 	#This is used for the logic to keep track of the m out of n logic for dropout
 	# frame_detection_status will be an array holding 1 and 0 to indicate if it is detected or not
 	frames_number = 0
-	m = 3
-	n = 10
+	n = 15
 	frame_detection_status = [-1]*n
+	particle_state = "TENTATIVE" 
 
     #Kalman Filter parameter
 	dt = 1.0
-	R_var = 1000.0  # Measurment variance
+	R_var = 3000  # Measurment variance
 
 	# x_pos, y_pos, x_vel,y_vel
 	x = np.array([[0., 0., 0., 0.]]).T  # State
@@ -96,6 +96,9 @@ class TrackedParticle:
 	def reset_frames_undetected(self):
 		self.frame_detection_status[self.frames_number%self.n] = 1
 		self.frames_undetected = 0 
+		#if the same particle has been succesfully been associated n times, change from TENTATIVE to CONFIRMED
+		if self.frame_detection_status.count(1)>= 8:
+		    self.particle_state = "CONFIRMED"
 
 	def reset_frame_status(self):
 		self.frame_detection_status = [0]*self.n

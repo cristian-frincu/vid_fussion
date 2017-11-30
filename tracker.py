@@ -7,10 +7,10 @@ class TrackManager:
 	self.particle_count = 0
 
     def new_particle(self,x, features):
-	particle = TrackedParticle(x,features[0], features[1], trackID = self.particle_count)
+	particle = TrackedParticle(x,features[0], features[1])#, trackID = self.particle_count)
 	particle.path = []
 	particle.reset_frame_status()
-	self.particle_count+=1
+	#self.particle_count+=1
 	self.particle_list.append(particle)
 	return self.particle_count -1
     
@@ -21,12 +21,19 @@ class TrackManager:
         [frame.increase_frames_undetected() for frame in self.particle_list]
 
 #Drop all the particles that have not been detected in n frames
-    def drop_lost_particles(self, m=3, n=5):
+    def drop_lost_particles(self, m= 5):
         temp_particle_list = []
 
         for particle in self.particle_list:
-            #if sum(particle.frame_detection_status) > 0:
-	    if particle.frames_undetected < 10:
+	    #Check if the particle has been confirmed and assign a trackID to it
+
+	    if particle.particle_state == "CONFIRMED" and particle.trackID == -1:
+		particle.trackID = self.particle_count
+		self.particle_count+=1
+
+	    #Implementation of m out of n
+            if particle.frame_detection_status.count(1) + particle.frame_detection_status.count(0) >=  m:
+	   # if particle.frames_undetected < 10:
                 temp_particle_list.append(particle)
             else:
                 print ("Dropped ID: "+ str(particle.trackID))

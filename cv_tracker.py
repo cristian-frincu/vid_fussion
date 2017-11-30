@@ -6,11 +6,11 @@ import itertools
 import cv2
 
 
-cap = cv2.VideoCapture('vtest.avi')
-#cap = cv2.VideoCapture('people.mp4')
+#cap = cv2.VideoCapture('vtest.avi')
+cap = cv2.VideoCapture('people.mp4')
 #cap = cv2.VideoCapture('balls_m.mp4')
+#cap = cv2.VideoCapture('cars.mp4')
 #cap = cv2.VideoCapture('cars2.mp4')
-#cap = cv2.VideoCapture('video2.mp4')
 
 
 #Settings for the text to display trackerID
@@ -20,13 +20,13 @@ fontColor              = (0,0,255)
 lineType               = 2
 
 
-ASSUME_SAME_PARTICLE_DISTANCE = 100
+ASSUME_SAME_PARTICLE_DISTANCE = 75
 MOVING_AVG = False
 MOG = True
 
 tracker = TrackManager()
 
-mog = cv2.BackgroundSubtractorMOG()
+mog = cv2.createBackgroundSubtractorMOG2()
 
 n=20
 avg = []
@@ -56,7 +56,7 @@ while(cap.isOpened()):
 
 	foreground = cv2.bitwise_and(frame,frame,mask=dilate)
 
-	contours, hierarchy = cv2.findContours(dilate,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+	im2, contours, hierarchy = cv2.findContours(dilate,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 	for cnt in contours:
 	    if cv2.contourArea(cnt) > 150:
 		    x,y,w,h = cv2.boundingRect(cnt)
@@ -73,14 +73,14 @@ while(cap.isOpened()):
 	foreground = cv2.bitwise_and(frame,frame,mask=erode)
 	#keypoints = detector.detect(erode)
 	#im_with_keypoints = cv2.drawKeypoints(frame, keypoints, np.array([]), (0,255,0    ), cv2.DRAW_MATCES_FLAGS_DRAW_RICH_KEYPOINTS)
-	contours, hierarchy = cv2.findContours(erode,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+	im2, contours, hierarchy = cv2.findContours(erode,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+
 	for cnt in contours:
-	    if cv2.contourArea(cnt) > 150:
+	    if cv2.contourArea(cnt) > 75:
 		x,y,w,h = cv2.boundingRect(cnt)
 		current_frame_raw = np.append(current_frame_raw, [x+w/2,y+h/2])
 		current_frame_feature = np.append(current_frame_feature, [w,h])
 		cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-
     
     current_frame_raw = current_frame_raw.reshape(current_frame_raw.shape[0]/2,2)
     current_frame_feature = current_frame_feature.reshape(current_frame_feature.shape[0]/2,2)
@@ -111,7 +111,7 @@ while(cap.isOpened()):
 
 	    distance_combined = np.sqrt((distance_eucledian)**2 + distance_feature**2)
 		#Find out which particle is the closest to the prediction
-            if distance_combined < smalled_distance:
+            if distance_eucledian < smalled_distance:
                 smalled_distance_current_frame_index = current_frame_index
                 smalled_distance = distance_combined
 
@@ -144,7 +144,11 @@ while(cap.isOpened()):
     for part in tracker.get_particle_list():
 	position = part.x
 #	cv2.rectangle(frame,(int(position[0])-10,int(position[2])-10),(position[0]+10,position[2]+10),(255,125,0),2)
-	cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,fontColor, lineType)
+	if part.particle_state == "CONFIRMED":
+	    cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,fontColor, lineType)
+	#if part.particle_state == "TENTATIVE":
+	    #cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,(125,125,23), lineType)
+	
 
 	if len(part.path) > 1:
 	    last = part.path[0]
@@ -158,6 +162,6 @@ while(cap.isOpened()):
 
     cv2.imshow('Outlined',  frame)
     #if cv2.waitKey(10) & 0xFF == ord('q'):
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(10) & 0xFF == ord('q'):
 	    break
 
