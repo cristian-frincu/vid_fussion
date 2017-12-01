@@ -6,8 +6,8 @@ import itertools
 import cv2
 
 
-#cap = cv2.VideoCapture('vtest.avi')
-cap = cv2.VideoCapture('people.mp4')
+cap = cv2.VideoCapture('vtest.avi')
+#cap = cv2.VideoCapture('people.mp4')
 #cap = cv2.VideoCapture('balls_m.mp4')
 #cap = cv2.VideoCapture('cars.mp4')
 #cap = cv2.VideoCapture('cars2.mp4')
