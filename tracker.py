@@ -37,7 +37,7 @@ class TrackManager:
 	   # if particle.frames_undetected < 10:
                 temp_particle_list.append(particle)
             else:
-                print ("Dropped ID: "+ str(particle.trackID))
+                #print ("Dropped ID: "+ str(particle.trackID))
                 pass
 
         self.particle_list = temp_particle_list
@@ -86,7 +86,7 @@ class TrackManager:
 		#cv2.putText(frame,str(prev_particle.trackID),(int(text_position[0]),int(text_position[1])), font,fontScale,fontColor, lineType)
 	    else:
 		new_particle_id = self.new_particle(current_frame_raw[smalled_distance_current_frame_index], current_frame_feature[smalled_distance_current_frame_index])
-		print ("Added new particle with ID:"+str(new_particle_id))
+		#print ("Added new particle with ID:"+str(new_particle_id))
 
 
 

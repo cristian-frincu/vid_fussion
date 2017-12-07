@@ -68,7 +68,7 @@ while(cap.isOpened()):
 	    cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,fontColor, lineType)
 	#if part.particle_state == "TENTATIVE":
 	#    cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,(125,125,23), lineType)
-	
+	#
 	if len(part.path) > 1:
 	    last = part.path[0]
 	    for past in part.path:
