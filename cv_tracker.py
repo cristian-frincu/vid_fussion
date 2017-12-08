@@ -20,7 +20,7 @@ fontColor              = (0,0,255)
 lineType               = 2
 
 
-ASSUME_SAME_PARTICLE_DISTANCE = 75
+ASSUME_SAME_PARTICLE_DISTANCE = 50
 
 tracker = TrackManager()
 
@@ -50,24 +50,31 @@ while(cap.isOpened()):
 	if cv2.contourArea(cnt) > 75:
 	    x,y,w,h = cv2.boundingRect(cnt)
 	    current_frame_raw = np.append(current_frame_raw, [x+w/2,y+h/2])
-	    current_frame_feature = np.append(current_frame_feature, [w,h])
+	    target_image = frame[y:y+h, x:x+w]
+	    
+	    histb = cv2.calcHist([target_image],[0],None,[10], [0,10])
+	    histg = cv2.calcHist([target_image],[1],None,[10], [0,10])
+	    histr = cv2.calcHist([target_image],[2],None,[10], [0,10])
+	    hist_combined = np.append(np.append(histb, histg), histr)
+	    current_frame_feature = np.append(current_frame_feature, [hist_combined])
 	    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
     
     current_frame_raw = current_frame_raw.reshape(current_frame_raw.shape[0]/2,2)
-    current_frame_feature = current_frame_feature.reshape(current_frame_feature.shape[0]/2,2)
-
+    current_frame_feature = current_frame_feature.reshape(current_frame_feature.shape[0]/30,30)
 
     tracker.drop_lost_particles()
     tracker.new_frame() # used for track management
-    tracker.match_particles(current_frame_raw, current_frame_feature, 75)
+    tracker.match_particles(current_frame_raw, current_frame_feature, ASSUME_SAME_PARTICLE_DISTANCE)
 
     for part in tracker.get_particle_list():
 	position = part.x
 #	cv2.rectangle(frame,(int(position[0])-10,int(position[2])-10),(position[0]+10,position[2]+10),(255,125,0),2)
 	if part.particle_state == "CONFIRMED":
 	    cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,fontColor, lineType)
+	    x,x_v,y,y_v = position
+	    cv2.rectangle(frame,(x+x_v,y+y_v),(x+x_v+10,y+y_v+10),(255,0,0),1)
 	#if part.particle_state == "TENTATIVE":
-	#    cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,(125,125,23), lineType)
+	    #cv2.putText(frame,str(part.trackID),(int(position[0]),int(position[2])), font,fontScale,(125,125,23), lineType)
 	#
 	if len(part.path) > 1:
 	    last = part.path[0]
@@ -76,6 +83,10 @@ while(cap.isOpened()):
 		last = past
 
     cv2.imshow('Outlined',  frame)
-    if cv2.waitKey(10) & 0xFF == ord('q'):
-	    break
+    if cv2.waitKey(0) & 0xFF == ord('q'):
+    	    break
+    if seq_num == 790:
+	break
 
+    seq_num+=1
+print tracker.particle_count

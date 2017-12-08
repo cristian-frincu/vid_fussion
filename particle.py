@@ -13,7 +13,7 @@ class TrackedParticle:
 	# Width and height for each particle will also be used to improve the matching estimates
 	width = -1
 	height = -1
-	
+	histogram = 0
 	#This is used for the logic to keep track of the m out of n logic for dropout
 	# frame_detection_status will be an array holding 1 and 0 to indicate if it is detected or not
 	frames_number = 0
@@ -51,11 +51,10 @@ class TrackedParticle:
 
 
 #If the particle is not identified to belong to a TrackID, -1 represents unidentified
-	def __init__(self,  z, width, height, trackID=-1):
+	def __init__(self,  z, hist, trackID=-1):
 		self.trackID = trackID
 		self.x = np.array([[z[0], 0., z[1], 0.]]).T # Initialize the particle at the first measurment location
-		self.width = width
-		self.height = height
+		self.histogram = hist
 
 	def update_location(self,z):
 		z = np.array([[z[0], z[1]]]).T

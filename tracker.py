@@ -8,7 +8,7 @@ class TrackManager:
 	self.particle_count = 0
 
     def new_particle(self,x, features):
-	particle = TrackedParticle(x,features[0], features[1])#, trackID = self.particle_count)
+	particle = TrackedParticle(x,features)#, trackID = self.particle_count)
 	particle.path = []
 	particle.reset_frame_status()
 	#self.particle_count+=1
@@ -46,6 +46,9 @@ class TrackManager:
 	for current_frame_index in range(len(current_frame_raw)):
 	    smalled_distance = np.inf
 	    smalled_distance_current_frame_index = -1
+
+	    smalled_feature_distance = np.inf
+	    smalled_feature_current_frame_id = -1
 	    for prev_particle in self.get_particle_list():
 
 		# There is a eucledian distance between the center of the objects 
@@ -55,19 +58,20 @@ class TrackManager:
 			    current_frame_raw[current_frame_index][1])**2)[0]
 		
 		
-		distance_feature = np.sqrt((prev_particle.width - 
-		current_frame_feature[current_frame_index][0])**2 + 
-		(prev_particle.height - current_frame_feature[current_frame_index][0])**2)
+		distance_feature = sum(abs(prev_particle.histogram - current_frame_feature[current_frame_index]))
 
 		distance_combined = np.sqrt((distance_eucledian)**2 + distance_feature**2)
 		    #Find out which particle is the closest to the prediction
 		if distance_eucledian < smalled_distance:
 		    smalled_distance_current_frame_index = current_frame_index
-		    smalled_distance = distance_combined
+		    smalled_distance = distance_eucledian
+
+		if distance_feature < smalled_feature_distance:
+		    smalled_feature_current_frame_index = current_frame_index
+		    smalled_feature_distance = distance_feature
 
 	    # Update the prediction for the best particle match or create a new particle
-		#print ("Smallest: "+ str(smalled_distance))
-		if smalled_distance < ASSUME_SAME_PARTICLE_DISTANCE: 
+		if smalled_distance < ASSUME_SAME_PARTICLE_DISTANCE: #and smalled_feature_distance < 6000: 
 		    measurmet =current_frame_raw[smalled_distance_current_frame_index]
 		    feature =current_frame_feature[smalled_distance_current_frame_index]
 
