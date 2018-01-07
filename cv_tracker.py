@@ -88,7 +88,8 @@ while(True):
 		last = past
 
     cv2.imshow('Outlined',  frame)
-    if cv2.waitKey(0) & 0xFF == ord('q'):
+    #if cv2.waitKey(0) & 0xFF == ord('q'):
+    if cv2.waitKey(5) & 0xFF == ord('q'):
 	    break
     if seq_num >= 794:
 	break
