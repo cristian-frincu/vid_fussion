@@ -5,7 +5,7 @@ import itertools
 
 import cv2
 
-def video(same_part, COUNTOUR_SIZE, THRESHOLD):
+def video(same_part, COUNTOUR_SIZE):
 
     ASSUME_SAME_PARTICLE_DISTANCE = same_part
 
@@ -28,7 +28,6 @@ def video(same_part, COUNTOUR_SIZE, THRESHOLD):
 
     mog = cv2.createBackgroundSubtractorMOG2()
 
-    n=20
     avg = []
     seq_num = 0
     kernel = np.ones((5,5),np.uint8)
@@ -41,7 +40,7 @@ def video(same_part, COUNTOUR_SIZE, THRESHOLD):
 
 	ret, frame = cap.read()
 	foreground = mog.apply(frame)
-	ret, threshold = cv2.threshold(foreground,THRESHOLD,255,cv2.THRESH_BINARY)
+	ret, threshold = cv2.threshold(foreground,125,255,cv2.THRESH_BINARY)
 	erode = cv2.erode(threshold, kernel)
 	foreground = cv2.bitwise_and(frame,frame,mask=erode)
 	#keypoints = detector.detect(erode)
@@ -77,11 +76,11 @@ def video(same_part, COUNTOUR_SIZE, THRESHOLD):
 		    cv2.line(frame, (last[0], last[2]),(past[0], past[2]),(0,0,255))
 		    last = past
 
-#	cv2.imshow('Outlined',  frame)
-#	if cv2.waitKey(1) & 0xFF == ord('q'):
-#		break
+	cv2.imshow('Outlined',  frame)
+	if cv2.waitKey(0) & 0xFF == ord('q'):
+		break
 
-	if seq_num == 790:
+	if seq_num ==794:
 	    break
 	#print seq_num
 	seq_num+=1
@@ -96,16 +95,19 @@ def opt_func(args):
     print "Trying: "+ str(args)
 
     time_start = time.time()
-    result =  video(args[0],args[1], args[2])
+    result =  video(args[0],args[1])
     print ("Time:"+str(time.time()-time_start))
 
     print ("Got: "+ str(result))
     print ("---------------------")
     return abs(22 - result)
 
-#opt_func([88.01138093,109.39133034])
 
-opt_result = optimize.minimize(opt_func, [88.01138093,109.3913303, 125], method="Powell", options = {"disp":True})
+#opt_func([ 53.26831446,77.58792896])
+opt_func([52.65028049,77.52786405])
+#opt_func([88.01138093,109.39133034])
+#opt_result = optimize.minimize(opt_func, [50,75], method="Powell", options = {"disp":True})
+#opt_result = optimize.minimize(opt_func, [88.01138093,109.3913303], method="Powell", options = {"disp":True})
 #print opt_result
 
 

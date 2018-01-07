@@ -23,21 +23,21 @@ class TrackedParticle:
 
     #Kalman Filter parameter
 	dt = 1.0
-	R_var = 3000  # Measurment variance
+	R_var = 55000000  # Measurment variance
 
 	# x_pos, y_pos, x_vel,y_vel
 	x = np.array([[0., 0., 0., 0.]]).T  # State
-	P = np.eye(4)*2000  # State covariance
+	P = np.eye(4)*50000000  # State covariance
 
 	F = np.array([[1., dt, 0, 0],
 		     [0,  1, 0, 0],
 		     [0, 0, 1, dt],
 		     [0, 0, 0, 1]])  # Process Model
 
-	Q = np.array([[3000., 250, 0, 0],
-		     [250,  100, 0, 0],
-		     [0, 0, 3000, 250],
-		     [0, 0, 250, 100]])  # Process Varience
+	Q = np.array([[30000., 250, 0, 0],
+		     [250,  1000, 0, 0],
+		     [0, 0, 30000, 250],
+		     [0, 0, 250, 1000]])  # Process Varience
 
 
 

@@ -9,8 +9,11 @@ import cv2
 cap = cv2.VideoCapture('vtest.avi')
 #cap = cv2.VideoCapture('people.mp4')
 #cap = cv2.VideoCapture('balls_m.mp4')
+#cap = cv2.VideoCapture('cars2.mp4')
 #cap = cv2.VideoCapture('cars.mp4')
 #cap = cv2.VideoCapture('cars2.mp4')
+#cap = cv2.VideoCapture('ant.mp4')
+#cap = cv2.VideoCapture(0)
 
 
 #Settings for the text to display trackerID
@@ -26,18 +29,20 @@ tracker = TrackManager()
 
 mog = cv2.createBackgroundSubtractorMOG2()
 
-n=20
+#n=20
 avg = []
 seq_num = 0
 kernel = np.ones((5,5),np.uint8)
 
 prev_frame_raw = np.array([])
-while(cap.isOpened()):
+while(True):
+#while(cap.isOpened()):
 
     current_frame_raw = np.array([])
     current_frame_feature = np.array([])
 
     ret, frame = cap.read()
+    cv2.imshow('Outlined',  frame)
     foreground = mog.apply(frame)
     ret, threshold = cv2.threshold(foreground,125,255,cv2.THRESH_BINARY)
     erode = cv2.erode(threshold, kernel)
@@ -84,9 +89,10 @@ while(cap.isOpened()):
 
     cv2.imshow('Outlined',  frame)
     if cv2.waitKey(0) & 0xFF == ord('q'):
-    	    break
-    if seq_num == 790:
+	    break
+    if seq_num >= 794:
 	break
 
     seq_num+=1
+    #print seq_num
 print tracker.particle_count
